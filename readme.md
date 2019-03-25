@@ -16,17 +16,9 @@ Now you just have to GET the `http://whoami` URL with the appropriate authentica
 
 The actual examples are:
 
-| Authent  | Conf       | Provider |  Example directory                  |
-| -------- | ---------- | -------- | ----------------------------------- |
-| Basic    | Entrypoint | File     | basic_auth_on_entrypoint/           |
-| Basic    | Frontend   | File     | basic_auth_on_frontend_with_file/   |
-| Basic    | Frontend   | Docker   | basic_auth_on_frontend_with_label/  |
-| Digest   | Entrypoint | File     | digest_auth_on_entrypoint/          |
-| Digest   | Frontend   | File     | digest_auth_on_frontend_with_file/  |
-| Digest   | Frontend   | Docker   | digest_auth_on_frontend_with_label/ |
-| Forward  | EntryPoint | File     | forward_auth_on_entrypoint/         |
-| Forward  | Frontend   | File     | forward_auth_on_frontend_with_file/ |
-| Forward  | Frontend   | Docker   | forward_auth_on_frontend_with_label/|
+| Authent | Provider      | Example directory               |
+|---------|---------------|---------------------------------|
+| Forward | File + Docker | forward_auth_with_docker_label/ |
 
 # Basic Auth
 Use htpasswd to generate the user:mdp both for file and label configuration.  

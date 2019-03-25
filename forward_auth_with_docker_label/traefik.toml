@@ -1,8 +1,6 @@
 [global]
     debug = true
 
-[ServersTransport]
-
 [api]
 
 [entryPoints]
@@ -14,13 +12,14 @@
     watch = true
 
 [providers.file]
-    [http]
-        [tlsStores]
-            [tlsStores.default]
-            [tlsStores.default.defaultCertificate]
-                 certFile = "/etc/traefik/crt/client.pem"
-                 keyFile  = "/etc/traefik/crt/client.key"
 
+    [tlsStores]
+        [tlsStores.default]
+        [tlsStores.default.defaultCertificate]
+             certFile = "/etc/traefik/crt/client.pem"
+             keyFile  = "/etc/traefik/crt/client.key"
+
+    [http]
         [http.middlewares]
             [http.middlewares.fauth.forwardauth]
                 address="https://auth.server:443"
