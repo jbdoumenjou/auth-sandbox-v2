@@ -1,0 +1,31 @@
+[global]
+    debug = true
+
+[ServersTransport]
+
+[api]
+
+[entryPoints]
+  [entryPoints.secured]
+  address = ":443"
+
+[providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    watch = true
+
+[providers.file]
+    [http]
+        [tlsStores]
+            [tlsStores.default]
+            [tlsStores.default.defaultCertificate]
+                 certFile = "/etc/traefik/crt/client.pem"
+                 keyFile  = "/etc/traefik/crt/client.key"
+
+        [http.middlewares]
+            [http.middlewares.fauth.forwardauth]
+                address="https://auth.server:443"
+                trustForwardHeader=true
+                    [http.middlewares.fauth.forwardauth.tls]
+                        ca="/etc/traefik/crt/ca.pem"
+                        cert="/etc/traefik/crt/client.pem"
+                        key="/etc/traefik/crt/client.key"

@@ -1,0 +1,56 @@
+version: '3.5'
+services:
+
+  # use apache as authent to test the forward auth
+  auth:
+    image: httpd:2.4.33-alpine
+    volumes:
+      - ./.htpasswd:/usr/local/apache/passwd/passwords:ro           # basic auth user/password file
+      - ./httpd.conf:/usr/local/apache2/conf/httpd.conf:ro          # apache configuration
+      - ./certs/ca.pem:/usr/local/apache2/conf/ssl.crt/ca.pem:ro
+      - ./certs/server.pem:/usr/local/apache2/conf/ssl.crt/server.pem:ro
+      - ./certs/server.key:/usr/local/apache2/conf/ssl.crt/server.key:ro
+    labels:
+          - traefik.port=443
+    networks:
+      net:
+        ipv4_address: 10.0.1.10
+
+  rproxy:
+    image: traefik:v2.0.0-alpha2-alpine                    # last locally build with make image-dirty
+    volumes:
+      - ./traefik.toml:/etc/traefik/traefik.toml:ro           # træfik static configuration
+      - ./certs/ca.pem:/etc/traefik/crt/ca.pem:ro
+      - ./certs/traefik.pem:/etc/traefik/crt/client.pem:ro
+      - ./certs/traefik.key:/etc/traefik/crt/client.key:ro
+      - /var/run/docker.sock:/var/run/docker.sock             # So that traefik can listen to the Docker events
+    extra_hosts:
+          - auth.server:10.0.1.10
+    ports:
+      - '443:443'                                             # https port
+      - '80:80'                                               # http port
+      - '8080:8080'                                           # for the træfik dashboard
+    labels:
+      - traefik.enable=false                                  # hide traefik from traefik
+    networks:
+      - net
+
+  api:
+    image: containous/whoami
+    labels:
+      - traefik.port=80
+      - traefik.http.routers.router0.entrypoints=secured
+      - traefik.http.routers.router0.tls=true
+      - traefik.http.routers.router0.rule=Host(`whoami`)
+      - traefik.http.routers.router0.middlewares=file.fauth
+    networks:
+      net:
+        ipv4_address: 10.0.1.4
+
+networks:
+  net:
+    name: "net"
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.0.1.0/28
